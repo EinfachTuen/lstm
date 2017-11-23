@@ -6,6 +6,7 @@ from keras.layers import Dense, Dropout
 from keras.layers import Embedding
 from keras.layers import LSTM
 
+import KTimage as kt
 
 
 def loadMidiFromText():
@@ -55,9 +56,15 @@ model.compile(loss='binary_crossentropy',
 x_train = numpy.asarray(inputArray[:-1])
 y_train = numpy.asarray(inputArray[1:])
 
-model.fit(x_train, y_train, batch_size=1032, epochs=10)
-score = model.evaluate(x_train, y_train, batch_size=1032)
-result = model.predict(x_train, batch_size=1032)
+model.fit(x_train, y_train, batch_size=16, epochs=1)
+score = model.evaluate(x_train, y_train, batch_size=16)
+result = model.predict(x_train, batch_size=16)
 print(score)
 print(result.shape)
-    
+numpy.savetxt("result.txt",result)
+
+
+def printKT(Q):
+    kt.exporttiles(array=Q, height=2037, width=88, filename="results/obs_M_1.pgm")
+
+printKT(result.reshape(88*2037))
