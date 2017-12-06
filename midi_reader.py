@@ -5,6 +5,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.layers import Embedding
 from keras.layers import LSTM
+from keras.layers import TimeDistributed
+from keras.utils import to_categorical
+from keras.optimizers import RMSprop
+from keras.layers import Activation
 
 import KTimage as kt
 
@@ -40,31 +44,36 @@ def createInputArray():
             print("Couldn't find informations"+str(splittedLine))
     return linesArray
 inputArray = createInputArray()
-print(inputArray)
 
+print("inputArray",len(inputArray))
+newInputArray = numpy.zeros((11,200,88))
+print(numpy.asarray(inputArray[0]).shape)
+
+for j in range(11):
+    for i in range(200):
+        newInputArray[j][i] = inputArray[i*j]
+
+print(newInputArray.shape)
 model = Sequential()
-
-model.add(Embedding(88, output_dim=88))
-model.add(LSTM(128))
-model.add(Dropout(0.5))
-model.add(Dense(88, activation='sigmoid'))
-
-model.compile(loss='binary_crossentropy',
-              optimizer='rmsprop',
-              metrics=['accuracy'])
+model.add(LSTM(128, input_shape=(11,1,88)))
+model.add(Dense(88))
+model.add(Activation('softmax'))
+optimizer = RMSprop(lr=0.01)
+model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 x_train = numpy.asarray(inputArray[:-1])
 y_train = numpy.asarray(inputArray[1:])
+print(numpy.argwhere(x_train))
+print(numpy.argwhere(y_train))
 
-model.fit(x_train, y_train, batch_size=16, epochs=1)
+model.fit(x_train, y_train, batch_size=280, epochs=1)
 score = model.evaluate(x_train, y_train, batch_size=16)
-result = model.predict(x_train, batch_size=16)
+result = model.predict(x_train[0], batch_size=16)
 print(score)
-print(result.shape)
+print(result)
 numpy.savetxt("result.txt",result)
-
 
 def printKT(Q):
     kt.exporttiles(array=Q, height=2037, width=88, filename="results/obs_M_1.pgm")
-
+print(numpy.argwhere(result))
 printKT(result.reshape(88*2037))
