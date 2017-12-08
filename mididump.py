@@ -41,23 +41,24 @@ def ScanBigInt(f, prefix=b''):
             return ((res<<7)|t, count)
 
 def main(fn):
-    sys.stdout.write('<!--\n  Output of midid, a simple MIDI dump tool.\n  vim: ft=xml\n-->\n')
+    resultString = ""
+    resultString += '<!--\n  Output of midid, a simple MIDI dump tool.\n  vim: ft=xml\n-->\n'
     f=open(fn, "rb")
     ReadUntil(f, b'MThd')
     mthd_len=struct.unpack('>L', ReadOrEOF(f, 4))[0]
     mthd=struct.unpack('>HHH', ReadOrEOF(f, 6))
-    sys.stdout.write('%08x <mthd size="%d" type="%d" tracks="%d" division="%d">\n' % ((f.tell()-14, mthd_len)+mthd))
+    resultString +='%08x <mthd size="%d" type="%d" tracks="%d" division="%d">\n' % ((f.tell()-14, mthd_len)+mthd)
     for trkno in range(mthd[1]):
-        sys.stdout.write('%08x  ' % f.tell())
+        resultString +='%08x  ' % f.tell()
         mtrk=ReadOrEOF(f, 4)
         assert mtrk==b'MTrk'
         mtrk_len=struct.unpack('>L', ReadOrEOF(f, 4))[0]
-        sys.stdout.write('<mtrk size="%d">\n' % mtrk_len)
+        resultString +='<mtrk size="%d">\n' % mtrk_len
         mtrk_len_read=0
         last_time=0
         last_meta=0x80
         while mtrk_len_read<mtrk_len:
-            sys.stdout.write('%08x   ' % f.tell())
+            resultString +='%08x   ' % f.tell()
             timestamp=ScanBigInt(f)
             mtrk_len_read+=timestamp[1]
             if mtrk_len_read>=mtrk_len: raise EOFError
@@ -80,18 +81,18 @@ def main(fn):
                 meta_data=ReadOrEOF(f, meta_len[0])
                 mtrk_len_read+=meta_len[0]
                 if mtrk_len_read>mtrk_len: raise EOFError
-                sys.stdout.write('  <meta  time="%d/%d" event="0x%02x" type="0x%02x" len="%d" data=' % (last_time, mthd[2], meta_int, param[0], meta_len[0]))
+                resultString +='  <meta  time="%d/%d" event="0x%02x" type="0x%02x" len="%d" data=' % (last_time, mthd[2], meta_int, param[0], meta_len[0])
                 if param[0]==0x51:
                     tempo=0
                     for tempoi in meta_data:
                         tempo=(tempo<<8)|tempoi
-                    sys.stdout.write('"%.2f" />\n' % (60000000.0/tempo))
+                    resultString +='"%.2f" />\n' % (60000000.0/tempo)
                 elif param[0] in (0x54, 0x58):
-                    sys.stdout.write('"%s" />\n' % ' '.join([str(meta_datai) for meta_datai in meta_data]))
+                    resultString +='"%s" />\n' % ' '.join([str(meta_datai) for meta_datai in meta_data])
                 elif param[0]==0x59 and meta_len[0]==2:
-                    sys.stdout.write('"%s %s" />\n' % ((('C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#')[meta_data[0]] if meta_data[0] in range(0, 8) else ('B', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F')[meta_data[0]-249] if meta_data[0] in range(249, 256) else meta_data[0]), (('Maj', 'min')[meta_data[1]] if meta_data[1] in (0, 1) else meta_data[1])))
+                    resultString +='"%s %s" />\n' % ((('C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#')[meta_data[0]] if meta_data[0] in range(0, 8) else ('B', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F')[meta_data[0]-249] if meta_data[0] in range(249, 256) else meta_data[0]), (('Maj', 'min')[meta_data[1]] if meta_data[1] in (0, 1) else meta_data[1]))
                 else:
-                    sys.stdout.write('%s />\n' % json.dumps(meta_data.decode('utf-8', 'replace'), ensure_ascii=False))
+                    resultString +='%s />\n' % json.dumps(meta_data.decode('utf-8', 'replace'), ensure_ascii=False)
             elif meta_int&0xf0==0xf0:
                 meta_len=ScanBigInt(f, param)
                 mtrk_len_read+=meta_len_tuple[1]
@@ -99,26 +100,24 @@ def main(fn):
                 meta_data=ReadOrEOF(f, meta_len[0])
                 mtrk_len_read+=meta_len[0]
                 if mtrk_len_read>mtr-k_len: raise EOFError
-                sys.stdout.write('  <sysex time="%d/%d" event="0x%02x" len="%d" param=%s />\n' % (last_time, mthd[2], meta_int, meta_len[0], json.dumps(meta_data.decode('utf-8', 'replace'), ensure_ascii=False)))
+                resultString +='  <sysex time="%d/%d" event="0x%02x" len="%d" param=%s />\n' % (last_time, mthd[2], meta_int, meta_len[0], json.dumps(meta_data.decode('utf-8', 'replace'), ensure_ascii=False))
             else:
-                sys.stdout.write('  <event time="%d/%d" event="0x%x" channel="%2d" param="' % (last_time, mthd[2], meta_int>>4, (meta_int&0xf)+1))
+                resultString +='  <event time="%d/%d" event="0x%x" channel="%2d" param="' % (last_time, mthd[2], meta_int>>4, (meta_int&0xf)+1)
                 if mtrk_len_read>mtrk_len: raise EOFError
                 if meta_int>>4 not in (0xc, 0xd):
                     param+=ReadOrEOF(f, 1)
                     mtrk_len_read+=1
                 if meta_int>>4 in (0x8, 0x9, 0xa):
-                    sys.stdout.write('%-3s %d" />\n' % ( '%s%d' % (('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B')[param[0]%12], param[0]/12-1), param[1]))
+                    resultString +='%-3s %d" />\n' % ( '%s%d' % (('C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B')[param[0]%12], param[0]/12-1), param[1])
                 elif len(param)==2:
-                    sys.stdout.write('0x%02x %d" />\n' % (param[0], param[1]))
+                    resultString +='0x%02x %d" />\n' % (param[0], param[1])
                 else:
-                    sys.stdout.write('%d" />\n' % param[0])
-        sys.stdout.write('%08x  </mtrk>\n' % f.tell())
-    sys.stdout.write('%08x </mthd>\n' % f.tell())
+                    resultString +='%d" />\n' % param[0]
+        resultString +='%08x  </mtrk>\n' % f.tell()
+    resultString +='%08x </mthd>\n' % f.tell()
     f.close()
+    return resultString
 
 if __name__=='__main__':
-    try:
-        sys.exit(main("fp-1all.mid"))
-    except Exception as e:
-        raise
-        sys.stderr.write('Error: %s %s\n' % (type(e).__name__, e))
+   print(main("fp-1all.mid"))
+

@@ -56,21 +56,16 @@ def convertToMidi(x):
         for resultNotePosition in range(0, result[resultLine].size-1):
             if result[resultLine][resultNotePosition] == 1:
                 noteActive = True
-                lastNoteActive = resultNotePosition
-        
+                lastNoteActive = resultNotePosition        
         if noteActive: 
             NotePartMidiString += "\n"+str(timeStep)+" On ch=1 n="+str(lastNoteActive)+" v=100"
             timeStep += 120
         else: 
             NotePartMidiString += "\n"+str(timeStep)+" On ch=1 n="+str(lastNoteActive)+" v=0"
-            
-    
     return midiStringParts.midiStartString()+""+NotePartMidiString+"\n"+midiStringParts.midiEndeString()
    
     
 
-    
-    
     
 inputArray = numpy.asarray(createInputArray())
 
@@ -104,8 +99,8 @@ score = model.evaluate(x_train, y_train, batch_size=88)
 result = model.predict(x_train[:-10], batch_size=88)
 
 endresult = result
-i = 0
 
+i= 0
 for element in result:
     j = 0
     for prob in element:
@@ -118,8 +113,6 @@ for element in result:
         #print(str(resultBin))
         j = j + 1
     i = i + 1
-
-
 
 finalString = convertToMidi(result)
 print(finalString)
