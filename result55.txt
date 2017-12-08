@@ -2046,16 +2046,7 @@ MTrk
 119760 On ch=1 n=75 v=0
 119760 On ch=1 n=80 v=100
 119880 On ch=1 n=80 v=0
-119880 On ch=1 n=83 v=100
-120000 On ch=1 n=83 v=0
-120000 On ch=1 n=83 v=0
-120000 On ch=1 n=83 v=0
-120000 On ch=1 n=80 v=100
-120120 On ch=1 n=80 v=0
-120120 On ch=1 n=83 v=100
-120240 On ch=1 n=83 v=0
-120240 On ch=1 n=83 v=0
-120240 On ch=1 n=83 v=0124800 Meta TrkEnd
+124800 Meta TrkEnd
 TrkEnd
 MTrk
 0 Meta 0x21 00
