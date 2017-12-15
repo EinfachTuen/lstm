@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as numpy
 
 from keras.models import Sequential
@@ -85,43 +86,89 @@ print("target shape " +str(target.shape))
 print(target)
 print(data.shape)
 model = Sequential()
-model.add(LSTM(88, input_shape=(1,88)))
+model.add(LSTM(500, input_shape=(1,88)))
 model.add(Dense(88, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
 
 x_train = numpy.asarray(data)
 y_train = numpy.asarray(target)
-testTrain = numpy.zeros((2037,1,88))
-for i in range (0, 2036):
-    x = numpy.random.random_integers(0,87)
-    testTrain[i][0][x] = 1
 
-print("X_TRAIN" +str(x_train))
+#eingangsVektor = x_train[1:-2035]
+#eingangsVektor = numpy.array([[[ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+#    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0]]])
+#print ("test" +str(eingangsVektor.shape))
+eingangsVektor = numpy.zeros((2037,1,88))
+maxZeitschritte = 2037
+result = numpy.zeros((maxZeitschritte,88))
+#print ("VEKTOR" +str(eingangsVektor))
 
-model.fit(x_train, y_train, batch_size=88, epochs=5)
-score = model.evaluate(x_train, y_train, batch_size=88)
-result = model.predict(testTrain, batch_size=88)
+model.fit(x_train, y_train, epochs=20)
+score = model.evaluate(x_train, y_train)
 
-endresult = result
+print(eingangsVektor)
+
+result = model.predict(eingangsVektor, batch_size=1)
 
 i= 0
+endresult = result
 for element in result:
     j = 0
     for prob in element:
         resultBin = 0
         if(prob > 0.5):
-            #print(prob)
+            print(prob)
             resultBin = 1
         endresult[i][j] = resultBin
         #print(str(prob))
         #print(str(resultBin))
         j = j + 1
     i = i + 1
+print(endresult)
+#for zeitschritt in range (0,maxZeitschritte-1):
+#    result[zeitschritt] = model.predict(eingangsVektor, batch_size=88)
+#    print(result)
+#    eingangsVektor[0] = result[zeitschritt]
+    
 
 
-#print("RESULT" +str(endresult))
-#finalString = convertToMidi(result)
-#print(finalString)
-#text_file = open("resultTTT.txt", "w")
-#text_file.write(finalString)
-#text_file.close()
+#endresult = result
+
+#i= 0
+#for element in result:
+#    j = 0
+#    for prob in element:
+#        resultBin = 0
+#        if(prob > 0.5):
+#            print(prob)
+#            resultBin = 1
+#        endresult[i][j] = resultBin
+#        #print(str(prob))
+#        #print(str(resultBin))
+#        j = j + 1
+#    i = i + 1
+#
+finalString = convertToMidi(result)
+print(finalString)
+text_file = open("resultMissingLast1000.txt", "w")
+text_file.write(finalString)
+text_file.close()
+##numpy.savetxt("result55.txt",finalString)
+#
+
+
+#i = 0
+#    for element in eingangsVektor[0]:
+#        j = 0
+#        for prob in element:
+#            resultBin = 0
+#            if(prob > 0.5):
+#                #print(prob)
+#                resultBin = 1
+#            eingangsVektor[0][i][j] = resultBin
+#            #print(str(prob))
+#            #print(str(resultBin))
+#            j = j + 1
+#        i = i + 1
