@@ -42,10 +42,6 @@ data,target = shapeData(sequence_length)
 print("DATA"+str(data.shape))
 print("TARGET"+str(target.shape))
 
-text_file = open("data2.txt", "w")
-text_file.write(json.dumps(data.tolist(), indent=2))
-text_file.close()
-
 print("inputArray",inputArray.shape)
 print("target shape " +str(target.shape))
 print(target)
