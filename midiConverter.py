@@ -36,8 +36,8 @@ def createTextFileFromMidiData(data):
             #print(trackArray)
     return numpy.asarray(result)
 
-def getMidiFromFile():
-    dataAsText = getTextFromMidi("fp-1all.mid")
+def getMidiFromFile(filename):
+    dataAsText = getTextFromMidi(filename)
     dataAsObject = json.loads(dataAsText)
     result = createTextFileFromMidiData(dataAsObject)
     print("shape: "+str(result.shape))

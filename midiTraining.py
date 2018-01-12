@@ -9,8 +9,13 @@ from keras.optimizers import RMSprop
 import json
 import midiConverter
 
-inputArray = midiConverter.getMidiFromFile()
-sequence_length = 10
+inputArray = midiConverter.getMidiFromFile("midi_songs_bach/fp-1all.mid")
+inputArray = numpy.append(inputArray, midiConverter.getMidiFromFile("midi_songs_bach/fp-2cou.mid"),axis=0)
+inputArray = numpy.append(inputArray, midiConverter.getMidiFromFile("midi_songs_bach/fp-3sar.mid"),axis=0)
+inputArray = numpy.append(inputArray, midiConverter.getMidiFromFile("midi_songs_bach/fp-4bou.mid"),axis=0)
+
+print("inputArrayComple:" + str(inputArray.shape))
+sequence_length = 100
 #print all
 startAsString = midiConverter.convertToMidiTrack(inputArray)
 numpy.savetxt("inputArray.txt",inputArray,fmt='%i')
@@ -48,7 +53,7 @@ print(target)
 
 print(data.shape)
 model = Sequential()
-model.add(LSTM(88, input_shape=(10,88)))
+model.add(LSTM(88, input_shape=(sequence_length,88)))
 model.add(Dense(88, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
 
@@ -58,7 +63,7 @@ print("x_train"+str(x_train.shape))
 print("y_train"+str(y_train.shape))
 
 numpy.savetxt("xTrain.txt",x_train[0])
-model.fit(x_train, y_train, batch_size=32, epochs=200)
+model.fit(x_train, y_train, batch_size=32, epochs=10)
 score = model.evaluate(x_train, y_train, batch_size=32)
 
 model.save('my_model.h5')
