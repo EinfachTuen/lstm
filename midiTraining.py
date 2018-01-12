@@ -24,36 +24,45 @@ inputArray = midiConverter.getMidiFromFile()
 data = inputArray[:-1] # all but last
 target = inputArray[1:] # all but first
 
-print("inputArray",inputArray.shape)
 
-data = data.reshape((1779, 1, 88))
 # target = numpy.array([[ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 #    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 #    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 #    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 #    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1]])
 data = target.reshape((1779, 1, 88))
+#
+# text_file = open("target Data.txt", "w")
+# text_file.write(json.dumps(target[0], indent=2))
+# text_file.close()
 
 print("target shape " +str(target.shape))
 print(target)
 print(data.shape)
 model = Sequential()
-model.add(LSTM(88, input_shape=(1,88)))
+model.add(LSTM(512, input_shape=(1,88)))
 model.add(Dense(88, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
 
 x_train = numpy.asarray(data)
 y_train = numpy.asarray(target)
-testTrain = numpy.zeros((2037, 1, 88))
-for i in range(0, 2036):
-    x = numpy.random.random_integers(0, 87)
-    testTrain[i][0][x] = 1
+train_size = 10
+testTrain = numpy.zeros((train_size, 1, 88))
+# for i in range(0, train_size):
+#     x = numpy.random.random_integers(0, 87)
+#     testTrain[i][0][x] = 1
+
+outputTest = testTrain.tolist()
+text_file = open("resultTrain.txt", "w")
+text_file.write(json.dumps(outputTest, indent=2))
+text_file.close()
 
 print("X_TRAIN" + str(x_train))
 
-model.fit(x_train, y_train, batch_size=88, epochs=5)
-score = model.evaluate(x_train, y_train, batch_size=88)
-result = model.predict(testTrain, batch_size=88)
+model.fit(x_train, y_train, batch_size=1, epochs=1)
+score = model.evaluate(x_train, y_train, batch_size=1)
+result = model.predict(testTrain, batch_size=1)
+numpy.savetxt('resultAfterSoftmaxPredict.txt',result)
 
 endresult = result
 
@@ -71,7 +80,13 @@ for element in result:
         j = j + 1
     i = i + 1
 
-finalString = midiConverter.convertToMidiTrack(result)
+numpy.savetxt('resultTTT.txt',endresult,  fmt='%i')
+
+print("inputArray",inputArray.shape)
+print("target",target.shape)
+print("data",data.shape)
+
+finalString = midiConverter.convertToMidiTrack(endresult)
 print(finalString)
 text_file = open("result55.txt", "w")
 text_file.write(json.dumps(finalString, indent=2))

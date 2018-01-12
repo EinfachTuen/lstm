@@ -18,6 +18,7 @@ def getMidiFromText(dataAsText,name):
 def createTextFileFromMidiData(data):
     smallestDelta = 9999
     trackNo = 0
+    print(data)
     for data in data["tracks"]:
         noteVector = numpy.zeros(88)
         trackArray = []
