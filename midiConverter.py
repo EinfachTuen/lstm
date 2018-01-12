@@ -6,40 +6,41 @@ from pprint import pprint
 
 def getTextFromMidi(fileName):
     file_ = {'file': (fileName, open(fileName, 'rb'))}
-    r = requests.post("http://my-own-it.de/toText", files=file_)
+    r = requests.post("http://localhost/toText", files=file_)
     print(r.status_code, r.reason)
     return r.text
 
 def getMidiFromText(dataAsText,name):
-    r = requests.post("http://my-own-it.de/toMid", data={"midAsJson": dataAsText, "name": name})
+    r = requests.post("http://localhost/toMidNewConvert", {"midAsJson": json.dumps(dataAsText), "name": name})
     print(r.status_code, r.reason)
     return r.text
 
 def createTextFileFromMidiData(data):
-    smallestDelta = 9999
+    text_file = open("data.txt", "w")
+    text_file.write(json.dumps(data, indent=2))
+    text_file.close()
     trackNo = 0
     for data in data["tracks"]:
-        noteVector = numpy.zeros(88)
         trackArray = []
         deltaTime = 0
-        for time in data:
-            if("noteNumber" in time):
-                if ("deltaTime" in time):
-                    deltaTime += time["deltaTime"]
-                    if (time["deltaTime"] < smallestDelta and time["deltaTime"] > 0):
-                        smallestDelta = time["deltaTime"]
-
-                if(time["noteNumber"] < 89):
-                    if(time["subtype"] == 'noteOn'):
-                        noteVector[time["noteNumber"]-1] = 1
-                    if (time["subtype"] == 'noteOff'):
-                        noteVector[time["noteNumber"]-1] = 0
-                    if ("deltaTime" in time):
+        for event in data:
+            if("noteNumber" in event):
+                if(event["noteNumber"] < 89):
+                    if(event["subtype"] == 'noteOn'):
+                        noteVector = numpy.zeros(88)
+                        noteVector[event["noteNumber"]-1] = 1
                         trackArray.append(numpy.copy(noteVector))
         if(len(trackArray) > 0):
             result = trackArray
             #print(trackArray)
     return numpy.asarray(result)
+
+def getMidiFromFile():
+    dataAsText = getTextFromMidi("fp-1all.mid")
+    dataAsObject = json.loads(dataAsText)
+    result = createTextFileFromMidiData(dataAsObject)
+    print("shape: "+str(result.shape))
+    return result
 
 def convertToMidiTrack(ingoing):
     lastNoteActive = 0
@@ -68,15 +69,6 @@ def convertToMidiTrack(ingoing):
         result.append(resultObject)
     return result
 
-def getMidiFromFile():
-    dataAsText = getTextFromMidi("fp-1all.mid")
-    dataAsObject = json.loads(dataAsText)
-    result = createTextFileFromMidiData(dataAsObject)
-    print("shape: "+str(result.shape))
-    return result
-    # pprint(dataAsObject)
-    # result = getMidiFromText(dataAsText, "fp1")
-    # print(result)
 
 #getMidiFromFile()
 
