@@ -25,7 +25,7 @@ def createTextFileFromMidiData(data):
         trackArray = []
         deltaTime = 0
         for event in data:
-            if("noteNumber" in event):
+            if("noteNumber" in event): #Hier muss eigentlich noch die Zeit beachtet werden.
                 if(event["noteNumber"] < 89):
                     if(event["subtype"] == 'noteOn'):
                         noteVector = numpy.zeros(88)
@@ -55,7 +55,7 @@ def convertToMidiTrack(ingoing):
          "subtype": 'noteOff'}
         noteActive = False
 
-        for resultNotePosition in range(0, ingoing[resultLine].size-1):
+        for resultNotePosition in range(0, ingoing[resultLine].size):
             if ingoing[resultLine][resultNotePosition] == 1:
                 noteActive = True
                 lastNoteActive = resultNotePosition

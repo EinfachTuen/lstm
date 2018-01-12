@@ -63,7 +63,7 @@ print("x_train"+str(x_train.shape))
 print("y_train"+str(y_train.shape))
 
 numpy.savetxt("xTrain.txt",x_train[0])
-model.fit(x_train, y_train, batch_size=32, epochs=10)
+model.fit(x_train, y_train, batch_size=32, epochs=100)
 score = model.evaluate(x_train, y_train, batch_size=32)
 
 model.save('my_model.h5')

@@ -9,7 +9,7 @@ model = load_model('my_model.h5')
 
 actualTrain = numpy.loadtxt("xTrain.txt")
 result = numpy.empty([1, 88])
-for x in range(0,2000):
+for x in range(0,100):
     if x > 0:
         actualTrain = actualTrain[1:actualTrain.shape[0]]
         partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
@@ -40,7 +40,7 @@ print(finalString)
 text_file = open("result55.txt", "w")
 text_file.write(json.dumps(finalString, indent=2))
 text_file.close()
-uploadResult = midiConverter.getMidiFromText(finalString,"testPy")
+uploadResult = midiConverter.getMidiFromText(finalString,"testPy2")
 print(uploadResult+".mid")
 
 
