@@ -16,15 +16,15 @@ GPU run command:
     Note: running Keras/Theano on GPU is formally supported for only NVIDIA cards (CUDA backend).
 '''
 from __future__ import print_function
-import sys
 
-from music21 import *
 import numpy as np
+import sys
+from music21 import *
 
+import lstm
 from grammar import *
 from preprocess import *
 from qa import *
-import lstm
 
 #----------------------------HELPER FUNCTIONS----------------------------------#
 
@@ -110,7 +110,7 @@ def generate(data_fn, out_fn, N_epochs):
     print('total # of values:', len(values))
 
     # build model
-    model = lstm.build_model(corpus=corpus, val_indices=val_indices, 
+    model = lstm.build_model(corpus=corpus, val_indices=val_indices,
                              max_len=max_len, N_epochs=N_epochs)
 
     # set up audio stream
