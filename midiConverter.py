@@ -30,7 +30,7 @@ def createTextFileFromMidiData(data):
                     if(event["subtype"] == 'noteOn'):
                         noteVector = numpy.zeros(88)
                         noteVector[event["noteNumber"]-1] = 1
-                        trackArray.append(numpy.copy(noteVector))
+                    trackArray.append(numpy.copy(noteVector))
         if(len(trackArray) > 0):
             result = trackArray
             #print(trackArray)
