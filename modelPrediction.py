@@ -5,7 +5,11 @@ from keras.models import load_model
 import json
 import midiConverter
 
+<<<<<<< HEAD
+model = load_model('my_modelDoubleLstm.h5')
+=======
 model = load_model('my_model_new.h5')
+>>>>>>> aa7bff312fb5692f81cbcda1315b07e6083e9663
 
 actualTrain = numpy.loadtxt("x2Train.txt")
 result = numpy.empty([1, 127])

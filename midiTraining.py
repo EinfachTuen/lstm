@@ -49,7 +49,8 @@ print(target)
 
 print(data.shape)
 model = Sequential()
-model.add(LSTM(88, input_shape=(sequence_length,88)))
+model.add(LSTM(88, return_sequences=True, input_shape=(sequence_length,88)))
+model.add(LSTM(128))
 model.add(Dense(88, activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
 
@@ -59,7 +60,11 @@ print("x_train"+str(x_train.shape))
 print("y_train"+str(y_train.shape))
 
 numpy.savetxt("xTrain.txt",x_train[0])
+<<<<<<< HEAD
+model.fit(x_train, y_train, batch_size=32, epochs=50)
+=======
 model.fit(x_train, y_train, batch_size=32, epochs=100)
+>>>>>>> aa7bff312fb5692f81cbcda1315b07e6083e9663
 score = model.evaluate(x_train, y_train, batch_size=32)
 
-model.save('my_model.h5')
+model.save('my_modelDoubleLstm.h5')
