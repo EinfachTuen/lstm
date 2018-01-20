@@ -5,10 +5,12 @@ from keras.models import load_model
 import json
 import midiConverter
 
-model = load_model('my_model_new.h5')
 
-actualTrain = numpy.loadtxt("x2Train.txt")
-result = numpy.empty([1, 127])
+model = load_model('my_modelDoubleLstm.h5')
+
+
+actualTrain = numpy.loadtxt("xTrain.txt")
+result = numpy.empty([1, 88])
 for x in range(0,5000):
     if x > 0:
         actualTrain = actualTrain[1:actualTrain.shape[0]]
@@ -21,7 +23,7 @@ for x in range(0,5000):
         actualTrain = numpy.append(actualTrain,partResult,axis=0)
         print("actualTrain" + str(actualTrain.shape))
         result[0] = partResult[0]
-print("finsied saves now")
+print("finished saves now")
 i = 0
 for element in result:
     j = 0
@@ -40,7 +42,7 @@ print(finalString)
 text_file = open("result55.txt", "w")
 text_file.write(json.dumps(finalString, indent=2))
 text_file.close()
-uploadResult = midiConverter.getMidiFromText(finalString,"testPy3")
+uploadResult = midiConverter.getMidiFromText(finalString,"testPyDoubleLstm120E")
 print(uploadResult+".mid")
 
 
