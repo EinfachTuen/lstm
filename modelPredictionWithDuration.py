@@ -6,7 +6,7 @@ from keras.models import load_model
 import json
 import midiConverter
 
-model = load_model('my_model_with durations.h5')
+model = load_model('noteModel.h5')
 model_duration = load_model('durationsModel.h5')
 
 actualTrain = numpy.loadtxt("x2Train.txt")
@@ -15,16 +15,20 @@ for x in range(0,500):
     if x > 0:
         actualTrain = actualTrain[1:actualTrain.shape[0]]
         partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
-        partResult[0][128] = (model_duration.predict(numpy.array([actualTrain]), batch_size=32))
-        actualTrain = numpy.append(actualTrain,partResult,axis=0)
-        result = numpy.append(result,partResult,axis=0)
+        duration = model_duration.predict(numpy.array([actualTrain]), batch_size=32)
+        newresult = numpy.append(partResult[0], duration)
+        partResult = newresult
+        print("partResult" + str(partResult.shape))
+        actualTrain = numpy.append(actualTrain, [partResult],axis=0)
+        result = numpy.append(result,[partResult],axis=0)
     else:
         partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
         print(partResult)
-        partResult[0][128] = (model_duration.predict(numpy.array([actualTrain]), batch_size=32))
-
+        duration = model_duration.predict(numpy.array([actualTrain]), batch_size=32)
+        newresult= numpy.append(partResult[0], duration)
+        partResult=newresult
         print("partResult" + str(partResult.shape))
-        actualTrain = numpy.append(actualTrain,partResult,axis=0)
+        actualTrain =  numpy.append(actualTrain,[partResult],axis=0)
         print("actualTrain" + str(actualTrain.shape))
         result[0] = partResult[0]
 
