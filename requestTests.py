@@ -11,29 +11,16 @@ def getMidiAsArray():
     numpy.savetxt("newTest.txt",newArray[0],fmt='%i')
     return numpy.asarray(newArray[0])
 
-# midi =numpy.asarray(getMidiAsArray())
-# print(str(midi.shape))
-
-
-def GetMidiJSONWithDurationHotEncoded():
-    r = requests.post("http://localhost/DurationHotEncoded")
-    input = json.loads(r.text)
-    GetInputElements(input)
-
-
-
-# def PrepareVektors(MidiWithDurations):
-#     numpy.zeros
-#     notesWithDurations = MidiWithDurations["track"]
-#     print(notesWithDurations)
-#
-
 def GetNotesPlusFloatDuration():
-    r = requests.post("http://localhost/DurationAsFloat")
+    r = requests.post("http://localhost/CombinedDurationAsFloat")
     input = numpy.asarray(json.loads(r.text),dtype=numpy.float32)
     numpy.savetxt("newTest.txt",input,fmt='%.3f')
     print(input.dtype)
     print(input)
     return input
 
-GetNotesPlusFloatDuration()
+def covertArrayToJSON(resultVektorArray):
+    r = requests.post("http://localhost/convertArrayToJSON", {"midAsJson": json.dumps(resultVektorArray), "name": "tryOne"})
+    print(r.status_code, r.reason,r.text)
+    return r.text
+

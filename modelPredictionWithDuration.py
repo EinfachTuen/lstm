@@ -1,4 +1,5 @@
 import numpy as numpy
+import requestTests
 
 from keras.models import load_model
 
@@ -42,13 +43,8 @@ for element in result:
 
 numpy.savetxt("output2.txt",result,fmt='%.3f')
 
-finalString = midiConverter.convertToMidiTrack(result)
-print(finalString)
-text_file = open("result55.txt", "w")
-text_file.write(json.dumps(finalString, indent=2))
-text_file.close()
-uploadResult = midiConverter.getMidiFromText(finalString,"testPy3")
-print(uploadResult+".mid")
+requestTests.covertArrayToJSON(result.tolist())
+
 
 
 
