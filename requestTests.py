@@ -8,13 +8,13 @@ def getMidiAsArray():
     r = requests.post("http://localhost/withDurationToMidi")
     newArray = numpy.asarray(json.loads(r.text))
     print(newArray[0])
-    numpy.savetxt("newTest.txt",newArray[0],fmt='%i')
+    numpy.savetxt("./log/newTest.txt",newArray[0],fmt='%i')
     return numpy.asarray(newArray[0])
 
 def GetNotesPlusFloatDuration():
     r = requests.post("http://localhost/CombinedDurationAsFloat")
     input = numpy.asarray(json.loads(r.text),dtype=numpy.float32)
-    numpy.savetxt("newTest.txt",input,fmt='%.3f')
+    numpy.savetxt("./log/newTest.txt",input,fmt='%.3f')
     print(input.dtype)
     print(input)
     return input

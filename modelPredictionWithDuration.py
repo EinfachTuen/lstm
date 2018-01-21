@@ -6,10 +6,10 @@ from keras.models import load_model
 import json
 import midiConverter
 
-model = load_model('noteModel.h5')
-model_duration = load_model('durationsModel.h5')
+model = load_model('./models/noteModel.h5')
+model_duration = load_model('./models/durationsModel.h5')
 
-actualTrain = numpy.loadtxt("x2Train.txt")
+actualTrain = numpy.loadtxt("./log/x2Train.txt")
 result = numpy.empty([1, 129])
 for x in range(0,500):
     if x > 0:
@@ -18,18 +18,18 @@ for x in range(0,500):
         duration = model_duration.predict(numpy.array([actualTrain]), batch_size=32)
         newresult = numpy.append(partResult[0], duration)
         partResult = newresult
-        print("partResult" + str(partResult.shape))
+        #print("partResult" + str(partResult.shape))
         actualTrain = numpy.append(actualTrain, [partResult],axis=0)
         result = numpy.append(result,[partResult],axis=0)
     else:
         partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
-        print(partResult)
+        #print(partResult)
         duration = model_duration.predict(numpy.array([actualTrain]), batch_size=32)
         newresult= numpy.append(partResult[0], duration)
         partResult=newresult
-        print("partResult" + str(partResult.shape))
+        #print("partResult" + str(partResult.shape))
         actualTrain =  numpy.append(actualTrain,[partResult],axis=0)
-        print("actualTrain" + str(actualTrain.shape))
+        #print("actualTrain" + str(actualTrain.shape))
         result[0] = partResult[0]
 
 print("finsied saves now")
@@ -45,7 +45,7 @@ for element in result:
         j = j + 1
     i = i + 1
 
-numpy.savetxt("output2.txt",result,fmt='%.3f')
+numpy.savetxt("./log/output2.txt",result,fmt='%.3f')
 
 requestTests.covertArrayToJSON(result.tolist())
 

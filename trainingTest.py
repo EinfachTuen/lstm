@@ -48,8 +48,8 @@ y_train = numpy.asarray(target)
 print("x2_train"+str(x_train.shape))
 print("y2_train"+str(y_train.shape))
 
-numpy.savetxt("x2Train.txt",x_train[0],fmt='%i')
-model.fit(x_train, y_train, batch_size=32, epochs=500)
+numpy.savetxt("./log/x2Train.txt",x_train[0],fmt='%i')
+model.fit(x_train, y_train, batch_size=32, epochs=5)
 score = model.evaluate(x_train, y_train, batch_size=32)
 
-model.save('my_model_new.h5')
+model.save('./models/my_model_new.h5')

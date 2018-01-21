@@ -13,7 +13,7 @@ import requestTests
 uploadResult = requestTests.GetNotesPlusFloatDuration()
 
 print(uploadResult.shape)
-epochen = 500
+epochen = 200
 sequence_length = 50
 print(uploadResult.shape)
 def shapeData(sequence_length):
@@ -54,11 +54,11 @@ print("x2_train"+str(x_train.shape))
 print("y2_train"+str(y_train.shape))
 
 
-numpy.savetxt("x2Train.txt",x_train[0],fmt='%.3f')
-numpy.savetxt("duration.txt",duration,fmt='%.3f')
-model.fit(x_train, y_train, batch_size=32, epochs=epochen)
+numpy.savetxt("./log/x2Train.txt",x_train[0],fmt='%.3f')
+numpy.savetxt("./log/duration.txt",duration,fmt='%.3f')
+model.fit(x_train, y_train, batch_size=32, epochs=1)
 score = model.evaluate(x_train, y_train, batch_size=32)
-model.save('noteModel.h5')
+#model.save('./models/noteModel.h5')
 
 def durationModel():
     duration_model = Sequential()
@@ -66,12 +66,10 @@ def durationModel():
     duration_model.add(Dense(1))
     duration_model.compile(loss='mean_absolute_error', optimizer='adam')
 
-    numpy.savetxt("x2Train.txt", x_train[0], fmt='%.3f')
-    numpy.savetxt("duration.txt", duration, fmt='%.3f')
+    numpy.savetxt("./log/x2Train.txt", x_train[0], fmt='%.3f')
+    numpy.savetxt("./log/duration.txt", duration, fmt='%.3f')
     duration_model.fit(data, duration, batch_size=32, epochs=epochen)
     score = duration_model.evaluate(data, duration, batch_size=32)
-    duration_model.save('durationsModel.h5')
-
-
+    duration_model.save('./models/durationsModel.h5')
 
 durationModel()
