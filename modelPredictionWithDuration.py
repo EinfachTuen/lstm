@@ -6,10 +6,10 @@ from keras.models import load_model
 import json
 import midiConverter
 
-model = load_model('./models/noteModel.h5')
-model_duration = load_model('./models/durationsModel.h5')
+model = load_model('./models/27_noteModel.h5')
+model_duration = load_model('./models/27_durationsModel.h5')
 
-actualTrain = numpy.loadtxt("./log/x2Train.txt")
+actualTrain = numpy.loadtxt("./log/27_x2Train.txt")
 result = numpy.empty([1, 129])
 for x in range(0,500):
     if x > 0:
