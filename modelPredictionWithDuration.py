@@ -1,5 +1,6 @@
 import numpy as numpy
 import requestTests
+import os
 
 from keras.models import load_model
 
@@ -56,11 +57,20 @@ def makePrediction():
 
     return requestTests.covertArrayToJSON(result.tolist())
 
+def getFolderContent():
+    newArray = os.listdir("./models/")
+    return newArray
 
 @app.route('/getPrediction')
 def getPrediction():
     print("got request")
     return "<a href='http://localhost/"+makePrediction()+".mid' >"+makePrediction()+"</a>"
+
+@app.route('/getModels')
+def getModels():
+    print("got request")
+    return jsonify(getFolderContent())
+
 
 if __name__ == '__main__':
     app.run()

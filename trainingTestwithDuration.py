@@ -8,6 +8,7 @@ from keras.optimizers import RMSprop
 
 import json
 import requestTests
+import os
 
 epochen = 100
 sequence_length = 10
@@ -29,7 +30,7 @@ def shapeData(uploadResult,sequence_length):
 
     return (input_data, output_data,output_duration)
 
-def durationModel(x_train,uploadResult,duration,data,item,channelName):
+def durationModel(x_train,uploadResult,duration,data,item,channelName,folderName):
     duration_model = Sequential()
     duration_model.add(LSTM(129, input_shape=(sequence_length, uploadResult.shape[1])))
     duration_model.add(Dense(1))
@@ -39,9 +40,9 @@ def durationModel(x_train,uploadResult,duration,data,item,channelName):
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt", duration, fmt='%.3f')
     duration_model.fit(data, duration, batch_size=64, epochs=epochen)
     score = duration_model.evaluate(data, duration, batch_size=64)
-    duration_model.save('./models/'+str(channelName)+'_durationsModel.h5')
+    duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
 
-def createModelForChannel(notes,channelName):
+def createModelForChannel(notes,channelName,folderName):
     uploadResult = numpy.asarray(notes, dtype=numpy.float32)
 
     numpy.savetxt("./log/newTest.txt", uploadResult, fmt='%.3f')
@@ -73,14 +74,19 @@ def createModelForChannel(notes,channelName):
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
     model.fit(x_train, y_train, batch_size=64, epochs=epochen)
     score = model.evaluate(x_train, y_train, batch_size=64)
-    model.save('./models/'+str(channelName)+'_noteModel.h5')
-    durationModel(x_train,uploadResult, duration, data, item, channelName)
+    model.save('./models/'+folderName+'/'+str(channelName)+'_noteModel.h5')
+    durationModel(x_train,uploadResult, duration, data, item, channelName,folderName)
 
 uploadResult = requestTests.GetNotesPlusFloatDuration()
-print(uploadResult[1]["channel"])
+folderName = uploadResult["folder"]
+midiEvents = uploadResult["notes"]
+if not os.path.exists("./models/"+folderName):
+    os.makedirs("./models/"+folderName)
+print("folderName:"+folderName)
+print(midiEvents[0]["channel"])
 item = 0
-for channel in uploadResult:
-    createModelForChannel(uploadResult[item]["notes"],uploadResult[item]["channel"])
+for channel in midiEvents:
+    createModelForChannel(midiEvents[item]["notes"],midiEvents[item]["channel"],folderName)
     item = item + 1
 
 
