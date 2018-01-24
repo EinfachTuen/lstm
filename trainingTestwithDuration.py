@@ -10,7 +10,7 @@ import json
 import requestTests
 
 epochen = 100
-sequence_length = 10
+sequence_length = 1
 
 def shapeData(uploadResult,sequence_length):
     input_data = []
@@ -77,7 +77,7 @@ def createModelForChannel(notes,channelName):
     durationModel(x_train,uploadResult, duration, data, item, channelName)
 
 uploadResult = requestTests.GetNotesPlusFloatDuration()
-print(uploadResult[1]["channel"])
+print(uploadResult[0]["channel"])
 item = 0
 for channel in uploadResult:
     createModelForChannel(uploadResult[item]["notes"],uploadResult[item]["channel"])
