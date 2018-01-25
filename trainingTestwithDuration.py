@@ -36,7 +36,7 @@ def durationModel(x_train,uploadResult,duration,data,item,channelName,folderName
     duration_model.add(Dense(1))
     duration_model.compile(loss='mean_absolute_error', optimizer='adam')
 
-    numpy.savetxt("./log/"+str(channelName)+"_x2Train.txt", x_train[0], fmt='%.3f')
+    numpy.savetxt("./models/"+folderName+'/'+str(channelName)+"_x2Train.txt", x_train[0], fmt='%.3f')
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt", duration, fmt='%.3f')
     duration_model.fit(data, duration, batch_size=64, epochs=epochen)
     score = duration_model.evaluate(data, duration, batch_size=64)

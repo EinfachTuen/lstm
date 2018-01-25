@@ -8,16 +8,13 @@ import json
 import midiConverter
 from flask import Flask
 from flask import jsonify
-
+from flask import request
 app = Flask(__name__)
 
 channelNumber = 30
 
-model = load_model('./models/' + str(channelNumber) + '_noteModel.h5')
-model_duration = load_model('./models/' + str(channelNumber) + '_durationsModel.h5')
 
-def makePrediction():
-    actualTrain = numpy.loadtxt("./log/"+str(channelNumber)+"_x2Train.txt")
+def makePrediction(model,model_duration,actualTrain):
     print(str(actualTrain.ndim))
     if(actualTrain.ndim == 1):
         actualTrain = numpy.array([actualTrain])
@@ -63,21 +60,30 @@ def makePrediction():
         if(maxElement > 0):
             result[i][maxElement] = 1
         i = i + 1
-
-
     numpy.savetxt("./log/output2.txt",result,fmt='%.3f')
 
     return requestTests.covertArrayToJSON(result.tolist())
 
 def getFolderContent():
     newArray = os.listdir("./models/")
-    return newArray
+    newDictionary ={};
+    for folder in newArray:
+        newDictionary[""+folder] =  os.listdir("./models/"+str(folder))
+    return newDictionary
 
+#127.0.0.1:5000/getPrediction?folder=bachOneChannel&channel=73
 @app.route('/getPrediction')
 def getPrediction():
+    folder = request.args.get('folder')
+    channel = request.args.get('channel')
+    model = load_model('./models/' +str(folder)+'/'+ str(channel) + '_noteModel.h5')
+    model_duration = load_model('./models/' +str(folder)+'/'+ str(channel) + '_durationsModel.h5')
     print("got request")
-    return "<a href='http://localhost/"+makePrediction()+".mid' >"+makePrediction()+"</a>"
+    starttrain = numpy.loadtxt('./models/' +str(folder)+'/'+  str(channel) + "_x2Train.txt")
+    midiFileName = makePrediction(model,model_duration,starttrain)
+    return "<a href='http://localhost/"+midiFileName+".mid' >"+midiFileName+"</a>"
 
+#127.0.0.1:5000/getModels
 @app.route('/getModels')
 def getModels():
     print("got request")
