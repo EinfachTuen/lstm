@@ -4,8 +4,6 @@ import os
 
 from keras.models import load_model
 
-import json
-import midiConverter
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -71,7 +69,7 @@ def getFolderContent():
         newDictionary[""+folder] =  os.listdir("./models/"+str(folder))
     return newDictionary
 
-#127.0.0.1:5000/getPrediction?folder=bachOneChannel&channel=73
+#http://127.0.0.1:5000/getPrediction?folder=bachOneChannel&channel=73
 @app.route('/getPrediction')
 def getPrediction():
     folder = request.args.get('folder')
