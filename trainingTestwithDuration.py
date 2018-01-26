@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+#Diese Datei kümmert sich um das erstellen und trainieren
+#der jeweiligen models.
+#Die Models werden als h5-Models gespeichert und dann
+#von modelPredictionWithDuration.py benutzt
+
 import numpy as numpy
 
 from keras.models import Sequential
@@ -10,9 +15,15 @@ import json
 import requestTests
 import os
 
-epochen = 100
+#Initialisierung wichtiger Variablen
+epochen = 10
 sequence_length = 10
+batch_size = 32
+hl_Neuronen_Noten = 256
+hl_Neuronen_Duration = 155
 
+#Bringt die Input- und Output-Daten in eine
+#für das Netz passende Forme
 def shapeData(uploadResult,sequence_length):
     input_data = []
     output_data = []
@@ -30,6 +41,10 @@ def shapeData(uploadResult,sequence_length):
 
     return (input_data, output_data,output_duration)
 
+#Erstellt ein h5-Model, das zur Generierung der
+#Duration von Noten benutzt werden kann
+#Dazu wird zuerst ein neues LSTM erstellt und
+#mit den Input- und Output-Daten trainiert.
 def durationModel(x_train,uploadResult,duration,data,item,channelName,folderName):
     duration_model = Sequential()
     duration_model.add(LSTM(129, input_shape=(sequence_length, uploadResult.shape[1])))
@@ -42,34 +57,28 @@ def durationModel(x_train,uploadResult,duration,data,item,channelName,folderName
     score = duration_model.evaluate(data, duration, batch_size=64)
     duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
 
+#Erstellt ein h5-Model, das zur Noten-Generierung
+#benutzt werden kann.
+#Dazu wird zuerst ein neues LSTM erstellt und
+#mit den Input- und Output-Daten trainiert.
 def createModelForChannel(notes,channelName,folderName):
     uploadResult = numpy.asarray(notes, dtype=numpy.float32)
 
     numpy.savetxt("./log/newTest.txt", uploadResult, fmt='%.3f')
-    print(uploadResult.shape)
 
-    print(uploadResult.shape)
 
 
     data,target,duration = shapeData(uploadResult,sequence_length)
-    print("DATA"+str(data.shape))
-    print("TARGET"+str(target.shape))
 
-    print("inputArray",uploadResult.shape)
-    print("target shape " +str(target.shape))
-    print(target)
-
-
-    print(data.shape)
     model = Sequential()
-    model.add(LSTM(129, input_shape=(sequence_length,uploadResult.shape[1])))
+    model.add(LSTM(129, input_shape=(sequence_length,uploadResult.shape[1]), return_sequences=True))
+    model.add(LSTM(256))
     model.add(Dense(128, activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
 
     x_train = data
     y_train = numpy.asarray(target)
-    print("x2_train"+str(x_train.shape))
-    print("y2_train"+str(y_train.shape))
+
     numpy.savetxt("./log/"+str(channelName)+"_x2Train.txt",x_train[0],fmt='%.3f')
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
     model.fit(x_train, y_train, batch_size=64, epochs=epochen)
@@ -77,17 +86,92 @@ def createModelForChannel(notes,channelName,folderName):
     model.save('./models/'+folderName+'/'+str(channelName)+'_noteModel.h5')
     durationModel(x_train,uploadResult, duration, data, item, channelName,folderName)
 
+#Erstellt ein h5-Model, das zur Noten-Generierung
+#benutzt werden kann.
+#Dazu wird zuerst ein neues LSTM erstellt und
+#mit den Input- und Output-Daten trainiert.
+#Die Input/Output-Daten werden mithilfe des
+#Parameters 'notes' ermittelt
+#Zusätzlich enthält das Netz noch einen
+#LSTM hidden-Layer mit 'hl_Neuronen' Neuronen
+def createModelForChannelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_length,epochen,batch_size):
+
+    #Initialisierung wichtiger Variablen
+    uploadResult = numpy.asarray(notes, dtype=numpy.float32)
+    data,target,duration = shapeData(uploadResult,sequence_length)
+    x_train = data
+    y_train = numpy.asarray(target)
+
+    # Logging
+    numpy.savetxt("./log/" + str(channelName) + "_x2Train.txt", x_train[0], fmt='%.3f')
+    numpy.savetxt("./log/" + str(channelName) + "_duration.txt", duration, fmt='%.3f')
+    numpy.savetxt("./log/newTest.txt", uploadResult, fmt='%.3f')
+
+    #Erstellung des Models
+    model = Sequential()
+    model.add(LSTM(129, input_shape=(sequence_length,uploadResult.shape[1]), return_sequences=True))
+    model.add(LSTM(hl_Neuronen))
+    model.add(Dense(128, activation='softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
+
+    #Logging
+    numpy.savetxt("./log/"+str(channelName)+"_x2Train.txt",x_train[0],fmt='%.3f')
+    numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
+
+    #Training
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen)
+    score = model.evaluate(x_train, y_train, batch_size=batch_size)
+
+    #Speichern des h5-Models
+    model.save('./models/'+folderName+'/'+str(channelName)+'_noteModel.h5')
+
+
+#Erstellt ein h5-Model, das zur Generierung der
+#Duration von Noten benutzt werden kann
+#Dazu wird zuerst ein neues LSTM erstellt und
+#mit den Input- und Output-Daten trainiert.
+#Zusätzlich enthält das Netz noch einen
+#LSTM hidden-Layer mit 'hl_Neuronen' Neuronen
+def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_length,epochen,batch_size):
+
+    #Initialisierung wichtiger Variablen
+    #'target' wird hier nicht gebraucht
+    uploadResult = numpy.asarray(notes, dtype=numpy.float32)
+    data, target, duration = shapeData(uploadResult, sequence_length)
+    x_train = data
+
+
+    #Erstellung des Models
+    duration_model = Sequential()
+    duration_model.add(LSTM(129, input_shape=(sequence_length, uploadResult.shape[1]), return_sequences=True))
+    duration_model.add(LSTM(hl_Neuronen))
+    duration_model.add(Dense(1))
+    duration_model.compile(loss='mean_absolute_error', optimizer='adam')
+
+    #Logging
+    numpy.savetxt("./models/"+folderName+'/'+str(channelName)+"_x2Train.txt", x_train[0], fmt='%.3f')
+    numpy.savetxt("./log/"+str(channelName)+"_duration.txt", duration, fmt='%.3f')
+
+    #Training
+    duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen)
+    score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
+
+    #Speicherung des Models
+    duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
+
+
+
 uploadResult = requestTests.GetNotesPlusFloatDuration()
 folderName = uploadResult["folder"]
 midiEvents = uploadResult["notes"]
 if not os.path.exists("./models/"+folderName):
     os.makedirs("./models/"+folderName)
-print("folderName:"+folderName)
-print(midiEvents[0]["channel"])
+
 item = 0
 for channel in midiEvents:
-    createModelForChannel(midiEvents[item]["notes"],midiEvents[item]["channel"],folderName)
-    item = item + 1
+    createModelForChannelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"],folderName, hl_Neuronen_Noten, sequence_length, epochen, batch_size)
+    durationModelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"], folderName, hl_Neuronen_Duration, sequence_length, epochen, batch_size)
 
+    item = item + 1
 
 
