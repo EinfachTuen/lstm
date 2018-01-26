@@ -9,10 +9,11 @@ import midiConverter
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 channelNumber = 30
-
 
 def makePrediction(model,model_duration,actualTrain):
     print(str(actualTrain.ndim))
@@ -66,7 +67,7 @@ def makePrediction(model,model_duration,actualTrain):
 
 def getFolderContent():
     newArray = os.listdir("./models/")
-    newDictionary ={};
+    newDictionary ={}
     for folder in newArray:
         newDictionary[""+folder] =  os.listdir("./models/"+str(folder))
     return newDictionary
@@ -86,7 +87,7 @@ def getPrediction():
 #127.0.0.1:5000/getModels
 @app.route('/getModels')
 def getModels():
-    print("got request")
+    print("got getModels request")
     return jsonify(getFolderContent())
 
 
