@@ -90,8 +90,7 @@ def createModelForChannel(notes,channelName,folderName,hl_Neuronen,sequence_leng
 
     #Erstellung des Models
     model = Sequential()
-    model.add(LSTM(129, input_shape=(sequence_length,uploadResult.shape[1]), return_sequences=True))
-    model.add(LSTM(hl_Neuronen))
+    model.add(LSTM(129, input_shape=(sequence_length,uploadResult.shape[1])))
     model.add(Dense(128, activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer=RMSprop(lr=0.01))
 
