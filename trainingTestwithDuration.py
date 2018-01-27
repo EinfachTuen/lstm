@@ -10,13 +10,14 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.optimizers import RMSprop
+import matplotlib.pyplot as plt
 
 import json
 import requestTests
 import os
 
 #Initialisierung wichtiger Variablen
-epochen = 10
+epochen = 100
 sequence_length = 10
 batch_size = 32
 hl_Neuronen_Noten = 256
@@ -65,11 +66,12 @@ def durationModel(notes,channelName,folderName,hl_Neuronen,sequence_length,epoch
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt", duration, fmt='%.3f')
 
     #Training
-    duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen)
-    score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
+    history =duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen)
+    duration_model.evaluate(x_train, duration, batch_size=batch_size)
 
     #Speicherung des Models
     duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
+    return history
 
 #Erstellt ein h5-Model, das zur Noten-Generierung
 #benutzt werden kann.
@@ -99,11 +101,12 @@ def createModelForChannel(notes,channelName,folderName,hl_Neuronen,sequence_leng
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
 
     #Training
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen)
-    score = model.evaluate(x_train, y_train, batch_size=batch_size)
+    history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen)
+    #score = model.evaluate(x_train, y_train, batch_size=batch_size)
 
     #Speichern des h5-Models
     model.save('./models/'+folderName+'/'+str(channelName)+'_noteModel.h5')
+    return history
 
 #Erstellt ein h5-Model, das zur Noten-Generierung
 #benutzt werden kann.
@@ -138,12 +141,12 @@ def createModelForChannelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequen
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
 
     #Training
-    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen)
-    score = model.evaluate(x_train, y_train, batch_size=batch_size)
+    history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen)
+    #score = model.evaluate(x_train, y_train, batch_size=batch_size)
 
     #Speichern des h5-Models
     model.save('./models/'+folderName+'/'+str(channelName)+'_noteModel.h5')
-
+    return history
 
 #Erstellt ein h5-Model, das zur Generierung der
 #Duration von Noten benutzt werden kann
@@ -172,12 +175,21 @@ def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_lengt
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt", duration, fmt='%.3f')
 
     #Training
-    duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen)
-    score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
+    history = duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen)
+    #score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
 
     #Speicherung des Models
     duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
+    return history
 
+def printHistory(history):
+    print(history.history.keys())
+    plt.plot(history.history['loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
 
 #Erstellen der Ordner in denen die Models gespeichert werden
 uploadResult = requestTests.GetNotesPlusFloatDuration()
@@ -187,12 +199,12 @@ if not os.path.exists("./models/"+folderName):
     os.makedirs("./models/"+folderName)
 
 #Erstellen und Trainieren der Netze,
-#sowie die Speicherung ihrer jeweiligen
+#sowie die Speicherung ihrer jeweiligen, und printing des model losses als graph
 #h5-Models
 item = 0
 for channel in midiEvents:
-    createModelForChannelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"],folderName, hl_Neuronen_Noten, sequence_length, epochen, batch_size)
-    durationModelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"], folderName, hl_Neuronen_Duration, sequence_length, epochen, batch_size)
+    printHistory(createModelForChannelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"],folderName, hl_Neuronen_Noten, sequence_length, epochen, batch_size))
+    printHistory(durationModelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"], folderName, hl_Neuronen_Duration, sequence_length, epochen, batch_size))
 
     item = item + 1
 
