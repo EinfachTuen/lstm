@@ -8,7 +8,6 @@ def GetNotesPlusFloatDuration():
     input = json.loads(r.text)
     return input
 
-def covertArrayToJSON(resultVektorArray):
-    r = requests.post("http://localhost/convertArrayToJSON", {"midAsJson": json.dumps(resultVektorArray), "name": "tryOne2"})
+def covertArrayToJSON(resultVektorArray,midiName,channel):
+    r = requests.post("http://localhost/convertArrayToJSON", {"midAsJson": json.dumps(resultVektorArray), "name": midiName, "channel":channel})
     return r.text
-

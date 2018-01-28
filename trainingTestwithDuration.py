@@ -23,7 +23,7 @@ import os
 #Initialisierung wichtiger Variablen
 epochen = 100
 sequence_length = 30
-batch_size = 1000
+batch_size = 2740
 hl_Neuronen_Noten = 256
 hl_Neuronen_Duration = 155
 
@@ -224,9 +224,14 @@ def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_lengt
     #score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
 
     #Speicherung des Models
-    duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
+    duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationModel.h5')
     return history
 
+
+#Plottet den Verlauf vom loss des Models
+#'history': Training des Models gibt ein
+#history-object zurück, das hier als
+#Eingabe verwendet wird
 def printHistory(history):
     print(history.history.keys())
     plt.plot(history.history['loss'])
