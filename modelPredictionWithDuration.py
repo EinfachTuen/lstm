@@ -58,7 +58,7 @@ def makePrediction(model,model_duration,actualTrain,midiName,channel):
     return requestTests.covertArrayToJSON(result.tolist(),midiName,channel)
 
 
-def makeSpecialPrediction(model,model_duration,actualTrain):
+def makeSpecialPrediction(model,actualTrain,midiName,channel):
     print(str(actualTrain.ndim))
     if(actualTrain.ndim == 1):
         actualTrain = numpy.array([actualTrain])
@@ -105,8 +105,8 @@ def makeSpecialPrediction(model,model_duration,actualTrain):
             result[i][maxElement] = 1
         i = i + 1
     numpy.savetxt("./log/output2.txt",result,fmt='%.3f')
-
-    return requestTests.covertArrayToJSON(result.tolist())
+    print(str(result.shape))
+    return requestTests.covertArrayToJSON(result.tolist(),midiName,channel)
 
 def getFolderContent():
     newArray = os.listdir("./models/")
@@ -138,7 +138,7 @@ def runPrediction(folderName,channel,midiName):
     noteModelPath = './models/' + folderName+ '/' + str(channel) + '_noteModel.h5'
     durationModelPath = './models/' + folderName + '/' + str(channel) + '_durationModel.h5'
     model = load_model(noteModelPath)
-    model_duration = load_model(durationModelPath)
+    #model_duration = load_model(durationModelPath)
     print("got request")
     startTrain = numpy.loadtxt('./models/' + folderName + '/' + str(channel) + "_x2Train.txt")
     print("trainShape" + str(startTrain.shape))
@@ -150,7 +150,7 @@ def runPrediction(folderName,channel,midiName):
         startTrain[i] = newNotes
     numpy.savetxt('./models/' + folderName + '/' + str(channel) + "_randomInput.txt", startTrain, fmt='%.3f')
 
-    midiFileName = makePrediction(model, model_duration, startTrain,midiName,channel)
+    midiFileName = makeSpecialPrediction(model, startTrain,midiName,channel)
     return midiFileName
 
 if __name__ == '__main__':

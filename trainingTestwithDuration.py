@@ -21,9 +21,9 @@ import requestTests
 import os
 
 #Initialisierung wichtiger Variablen
-epochen = 100
-sequence_length = 30
-batch_size = 2740
+epochen = 200
+sequence_length = 15
+batch_size = 150
 hl_Neuronen_Noten = 256
 hl_Neuronen_Duration = 155
 
@@ -126,7 +126,8 @@ def specialModel(notes,channelName,folderName,hl_Neuronen,sequence_length,epoche
 
     print(str(duration.shape))
     # Logging
-    numpy.savetxt("./log/" + str(channelName) + "_x2Train.txt", x_train[0], fmt='%.3f')
+    print(str(x_train[0].shape))
+    numpy.savetxt("./models/"+folderName+'/'+str(channelName)+"_x2Train.txt", x_train[0], fmt='%.3f')
     numpy.savetxt("./log/" + str(channelName) + "_duration.txt", duration, fmt='%.3f')
     numpy.savetxt("./log/newTest.txt", uploadResult, fmt='%.3f')
 
@@ -138,15 +139,10 @@ def specialModel(notes,channelName,folderName,hl_Neuronen,sequence_length,epoche
     durationDenseLayer = Dense(1, name='durationDenseLayer')(mainLSTM)
 
     model = Model(inputs= mainInput, outputs=[noteDenseLayer, durationDenseLayer])
-    model.compile(optimizer='rmsprop',
-                  loss={'noteDenseLayer': 'binary_crossentropy', 'durationDenseLayer': 'mean_absolute_error'})
-
-    #Logging
-    numpy.savetxt("./log/"+str(channelName)+"_x2Train.txt",x_train[0],fmt='%.3f')
-    numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
-
+    model.compile(optimizer='adam',
+                  loss={'noteDenseLayer': 'binary_crossentropy', 'durationDenseLayer': 'mean_absolute_error'},loss_weights={'noteDenseLayer':0.1, 'durationDenseLayer':0.01 })
     #Training
-    history = model.fit(x_train, [y_train,duration], batch_size=batch_size, epochs=epochen)
+    history = model.fit(x_train, [y_train,duration], batch_size=batch_size, epochs=epochen, verbose=1)
     #score = model.evaluate(x_train, y_train, batch_size=batch_size)
 
     #Speichern des h5-Models
@@ -235,10 +231,12 @@ def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_lengt
 def printHistory(history):
     print(history.history.keys())
     plt.plot(history.history['loss'])
+    plt.plot(history.history['noteDenseLayer_loss'])
+    plt.plot(history.history['durationDenseLayer_loss'])
     plt.title('model loss')
     plt.ylabel('loss')
     plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
+    plt.legend(['train', 'noteDenseLayer_loss', 'durationDenseLayer_loss'], loc='upper left')
     plt.show()
 
 #Erstellen der Ordner in denen die Models gespeichert werden
@@ -255,7 +253,7 @@ item = 0
 for channel in midiEvents:
     #printHistory(createModelForChannelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"],folderName, hl_Neuronen_Noten, sequence_length, epochen, batch_size))
     #printHistory(durationModelDuoLSTM(midiEvents[item]["notes"],midiEvents[item]["channel"], folderName, hl_Neuronen_Duration, sequence_length, epochen, batch_size))
-    specialModel(midiEvents[item]["notes"],midiEvents[item]["channel"], folderName, hl_Neuronen_Duration, sequence_length, epochen, batch_size)
+    printHistory(specialModel(midiEvents[item]["notes"],midiEvents[item]["channel"], folderName, hl_Neuronen_Duration, sequence_length, epochen, batch_size))
     item = item + 1
 
 
