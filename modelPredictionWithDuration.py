@@ -94,9 +94,10 @@ def runPrediction(folderName,channel,midiName):
     i = 0
     for notes in startTrain:
         newNotes = numpy.zeros(129)
-        randomActiveNote = random.randint(0, 128)
+        randomActiveNote = random.randint(70, 90)
         newNotes[randomActiveNote] = 1
         startTrain[i] = newNotes
+    numpy.savetxt('./models/' + folderName + '/' + str(channel) + "_randomInput.txt", startTrain, fmt='%.3f')
 
     midiFileName = makePrediction(model, model_duration, startTrain,midiName,channel)
     return midiFileName
