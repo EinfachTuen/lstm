@@ -182,6 +182,11 @@ def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_lengt
     duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
     return history
 
+
+#Plottet den Verlauf vom loss des Models
+#'history': Training des Models gibt ein
+#history-object zurück, das hier als
+#Eingabe verwendet wird
 def printHistory(history):
     print(history.history.keys())
     plt.plot(history.history['loss'])
