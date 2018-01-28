@@ -11,7 +11,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-def makePrediction(model,model_duration,actualTrain,midiName):
+def makePrediction(model,model_duration,actualTrain,midiName,channel):
     print(str(actualTrain.ndim))
     if(actualTrain.ndim == 1):
         actualTrain = numpy.array([actualTrain])
@@ -55,7 +55,7 @@ def makePrediction(model,model_duration,actualTrain,midiName):
         i = i + 1
     numpy.savetxt("./log/output2.txt",result,fmt='%.3f')
 
-    return requestTests.covertArrayToJSON(result.tolist(),midiName)
+    return requestTests.covertArrayToJSON(result.tolist(),midiName,channel)
 
 def getFolderContent():
     newArray = os.listdir("./models/")
@@ -75,7 +75,7 @@ def getPrediction():
     print("got request")
     starttrain = numpy.loadtxt('./models/' +str(folder)+'/'+  str(channel) + "_x2Train.txt")
     print("trainShape" + str(starttrain.shape))
-    midiFileName = makePrediction(model,model_duration,starttrain,midiName)
+    midiFileName = makePrediction(model,model_duration,starttrain,midiName,channel)
     return "<a href='http://localhost/"+midiFileName+".mid' >"+midiFileName+"</a>"
 #127.0.0.1:5000/getModels
 @app.route('/getModels')
@@ -98,7 +98,7 @@ def runPrediction(folderName,channel,midiName):
         newNotes[randomActiveNote] = 1
         startTrain[i] = newNotes
 
-    midiFileName = makePrediction(model, model_duration, startTrain,midiName)
+    midiFileName = makePrediction(model, model_duration, startTrain,midiName,channel)
     return midiFileName
 
 if __name__ == '__main__':
