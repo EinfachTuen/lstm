@@ -17,9 +17,9 @@ import requestTests
 import os
 
 #Initialisierung wichtiger Variablen
-epochen = 100
-sequence_length = 30
-batch_size = 1000
+epochen = 50
+sequence_length = 50
+batch_size = 3000
 hl_Neuronen_Noten = 256
 hl_Neuronen_Duration = 155
 

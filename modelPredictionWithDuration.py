@@ -1,3 +1,8 @@
+#Diese Datei kümmert sich um die Generierung
+#neuer Noten und die Erstellung der Midi-Datei
+#aus den generierten Noten
+
+
 import numpy as numpy
 import requestTests
 import os
@@ -11,7 +16,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-channelNumber = 30
 
 def makePrediction(model,model_duration,actualTrain):
     print(str(actualTrain.ndim))

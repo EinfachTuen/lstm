@@ -1,14 +1,13 @@
 import requests
 import json
-import numpy as numpy
-from pprint import pprint
 
 def GetNotesPlusFloatDuration():
     r = requests.post("http://localhost/CombinedDurationAsFloat")
     input = json.loads(r.text)
     return input
 
+
 def covertArrayToJSON(resultVektorArray):
-    r = requests.post("http://localhost/convertArrayToJSON", {"midAsJson": json.dumps(resultVektorArray), "name": "tryOne2"})
+    r = requests.post("http://localhost/convertArrayToJSON", {"midAsJson": json.dumps(resultVektorArray), "name": "Bach50E.50SL.3000BS.256.155"})
     return r.text
 
