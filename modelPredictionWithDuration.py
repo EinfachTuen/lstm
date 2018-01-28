@@ -3,7 +3,7 @@ import requestTests
 import os
 
 from keras.models import load_model
-
+import random
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -11,9 +11,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-channelNumber = 30
-
-def makePrediction(model,model_duration,actualTrain):
+def makePrediction(model,model_duration,actualTrain,midiName):
     print(str(actualTrain.ndim))
     if(actualTrain.ndim == 1):
         actualTrain = numpy.array([actualTrain])
@@ -26,18 +24,14 @@ def makePrediction(model,model_duration,actualTrain):
             duration = model_duration.predict(numpy.array([actualTrain]), batch_size=32)
             newresult = numpy.append(partResult[0], duration)
             partResult = newresult
-            #print("partResult" + str(partResult.shape))
             actualTrain = numpy.append(actualTrain, [partResult],axis=0)
             result = numpy.append(result,[partResult],axis=0)
         else:
             partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
-            #print(partResult)
             duration = model_duration.predict(numpy.array([actualTrain]), batch_size=32)
             newresult= numpy.append(partResult[0], duration)
             partResult=newresult
-            #print("partResult" + str(partResult.shape))
             actualTrain =  numpy.append(actualTrain,[partResult],axis=0)
-            #print("actualTrain" + str(actualTrain.shape))
             result[0] = partResult[0]
 
     print("finsied saves now")
@@ -49,7 +43,7 @@ def makePrediction(model,model_duration,actualTrain):
         for prob in element:
             resultBin = 0
             if (prob > maxProb and j < 128):
-                    print(str(prob))
+                    #print(str(prob))
                     maxElement = j
                     maxProb = prob
             if (j < 128):
@@ -61,7 +55,7 @@ def makePrediction(model,model_duration,actualTrain):
         i = i + 1
     numpy.savetxt("./log/output2.txt",result,fmt='%.3f')
 
-    return requestTests.covertArrayToJSON(result.tolist())
+    return requestTests.covertArrayToJSON(result.tolist(),midiName)
 
 def getFolderContent():
     newArray = os.listdir("./models/")
@@ -73,21 +67,39 @@ def getFolderContent():
 #http://127.0.0.1:5000/getPrediction?folder=bachOneChannel&channel=73
 @app.route('/getPrediction')
 def getPrediction():
+    midiName = "test1"
     folder = request.args.get('folder')
     channel = request.args.get('channel')
     model = load_model('./models/' +str(folder)+'/'+ str(channel) + '_noteModel.h5')
     model_duration = load_model('./models/' +str(folder)+'/'+ str(channel) + '_durationsModel.h5')
     print("got request")
     starttrain = numpy.loadtxt('./models/' +str(folder)+'/'+  str(channel) + "_x2Train.txt")
-    midiFileName = makePrediction(model,model_duration,starttrain)
+    print("trainShape" + str(starttrain.shape))
+    midiFileName = makePrediction(model,model_duration,starttrain,midiName)
     return "<a href='http://localhost/"+midiFileName+".mid' >"+midiFileName+"</a>"
-
 #127.0.0.1:5000/getModels
 @app.route('/getModels')
 def getModels():
     print("got getModels request")
     return jsonify(getFolderContent())
 
+def runPrediction(folderName,channel,midiName):
+    noteModelPath = './models/' + folderName+ '/' + str(channel) + '_noteModel.h5'
+    durationModelPath = './models/' + folderName + '/' + str(channel) + '_durationsModel.h5'
+    model = load_model(noteModelPath)
+    model_duration = load_model(durationModelPath)
+    print("got request")
+    startTrain = numpy.loadtxt('./models/' + folderName + '/' + str(channel) + "_x2Train.txt")
+    print("trainShape" + str(startTrain.shape))
+    i = 0
+    for notes in startTrain:
+        newNotes = numpy.zeros(129)
+        randomActiveNote = random.randint(0, 128)
+        newNotes[randomActiveNote] = 1
+        startTrain[i] = newNotes
+
+    midiFileName = makePrediction(model, model_duration, startTrain,midiName)
+    return midiFileName
 
 if __name__ == '__main__':
     app.run()
