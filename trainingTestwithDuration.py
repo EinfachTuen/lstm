@@ -17,9 +17,9 @@ import requestTests
 import os
 
 #Initialisierung wichtiger Variablen
-epochen = 30
-sequence_length = 20
-batch_size = 512
+epochen = 100
+sequence_length = 30
+batch_size = 2740
 hl_Neuronen_Noten = 256
 hl_Neuronen_Duration = 155
 
@@ -179,7 +179,7 @@ def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_lengt
     #score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
 
     #Speicherung des Models
-    duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationsModel.h5')
+    duration_model.save('./models/'+folderName+'/'+str(channelName)+'_durationModel.h5')
     return history
 
 

@@ -1,4 +1,4 @@
 import modelPredictionWithDuration
 
-midiFileName = modelPredictionWithDuration.runPrediction("bachOneChannel",73,"bachmidi")
+midiFileName = modelPredictionWithDuration.runPrediction("metallica_longTime",30,"metalicamidi")
 print(midiFileName)

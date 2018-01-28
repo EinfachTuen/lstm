@@ -71,7 +71,7 @@ def getPrediction():
     folder = request.args.get('folder')
     channel = request.args.get('channel')
     model = load_model('./models/' +str(folder)+'/'+ str(channel) + '_noteModel.h5')
-    model_duration = load_model('./models/' +str(folder)+'/'+ str(channel) + '_durationsModel.h5')
+    model_duration = load_model('./models/' +str(folder)+'/'+ str(channel) + '_durationModel.h5')
     print("got request")
     starttrain = numpy.loadtxt('./models/' +str(folder)+'/'+  str(channel) + "_x2Train.txt")
     print("trainShape" + str(starttrain.shape))
@@ -85,7 +85,7 @@ def getModels():
 
 def runPrediction(folderName,channel,midiName):
     noteModelPath = './models/' + folderName+ '/' + str(channel) + '_noteModel.h5'
-    durationModelPath = './models/' + folderName + '/' + str(channel) + '_durationsModel.h5'
+    durationModelPath = './models/' + folderName + '/' + str(channel) + '_durationModel.h5'
     model = load_model(noteModelPath)
     model_duration = load_model(durationModelPath)
     print("got request")
