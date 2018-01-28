@@ -18,8 +18,8 @@ import os
 
 #Initialisierung wichtiger Variablen
 epochen = 100
-sequence_length = 10
-batch_size = 32
+sequence_length = 30
+batch_size = 1000
 hl_Neuronen_Noten = 256
 hl_Neuronen_Duration = 155
 
@@ -141,7 +141,7 @@ def createModelForChannelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequen
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt",duration,fmt='%.3f')
 
     #Training
-    history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen)
+    history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochen,verbose=1)
     #score = model.evaluate(x_train, y_train, batch_size=batch_size)
 
     #Speichern des h5-Models
@@ -175,7 +175,7 @@ def durationModelDuoLSTM(notes,channelName,folderName,hl_Neuronen,sequence_lengt
     numpy.savetxt("./log/"+str(channelName)+"_duration.txt", duration, fmt='%.3f')
 
     #Training
-    history = duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen)
+    history = duration_model.fit(x_train, duration, batch_size=batch_size, epochs=epochen,verbose=1)
     #score = duration_model.evaluate(x_train, duration, batch_size=batch_size)
 
     #Speicherung des Models
