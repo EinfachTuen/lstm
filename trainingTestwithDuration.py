@@ -186,11 +186,11 @@ def specialModel(notes,channelName,folderName,hl_Neuronen,sequence_length,epoche
 
     model = Model(inputs= mainInput, outputs=[noteDenseLayer, durationDenseLayer,timeDenseLayer])
     model.compile(optimizer='Adadelta',
-                  loss={'noteDenseLayer': 'categorical_crossentropy', 'durationDenseLayer': 'categorical_crossentropy', 'timeDenseLayer': 'categorical_crossentropy'})
+                  loss={'noteDenseLayer': 'categorical_crossentropy', 'durationDenseLayer': 'categorical_crossentropy', 'timeDenseLayer': 'categorical_crossentropy'},metrics=['accuracy'])
     #Training
     history = model.fit(x_train, [y_train,duration,time], batch_size=batch_size, epochs=epochen, verbose=2, shuffle= False)
     #score = model.evaluate(x_train, y_train, batch_size=batch_size)
-
+    print(history)
     #Speichern des h5-Models
     model.save('./models/'+folderName+'/'+str(channelName)+'_noteModel.h5')
     print(model.summary())
@@ -317,10 +317,15 @@ def printHistory(history,channelName):
     plt.plot(history.history['noteDenseLayer_loss'])
     plt.plot(history.history['durationDenseLayer_loss'])
     plt.plot(history.history['timeDenseLayer_loss'])
+    plt.plot(history.history['noteDenseLayer_acc'])
+    plt.plot(history.history['durationDenseLayer_acc'])
+    plt.plot(history.history['timeDenseLayer_acc'])
     plt.title('model loss channel:'+str(channelName))
     plt.ylabel('loss')
     plt.xlabel('epoch')
-    plt.legend(['OverAll_Loss', 'noteDenseLayer_loss', 'durationDenseLayer_loss','timeDenseLayer_loss'], loc='upper left')
+    axes = plt.gca()
+    axes.set_ylim([0, 2])
+    plt.legend(['Loss', 'Loss Note', 'Loss Duration','Loss Time','Accuracy Notes','Accuracy Durations','Accuracy Time'], loc='upper left')
     plt.show()
 
 # Erstellen der Ordner in denen die Models gespeichert werden
