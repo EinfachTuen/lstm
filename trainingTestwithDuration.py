@@ -141,6 +141,12 @@ def specialModel(notes,channelName,folderName,hl_Neuronen,sequence_length,epoche
 
     #Initialisierung wichtiger Variablen
     uploadResult = numpy.asarray(notes, dtype=numpy.float32)
+    print("uploadResult" + str(uploadResult.shape))
+    epochen = int((2000 / uploadResult.shape[0]) * epochen)
+    if epochen < epochen:
+        epochen = 200
+    if uploadResult.shape[0] > 13000:
+        sequence_length = 4
     data,target,duration,time = shapeData(uploadResult,sequence_length)
     x_train = numpy.asarray(data)
     y_train = numpy.asarray(target)
@@ -160,11 +166,6 @@ def specialModel(notes,channelName,folderName,hl_Neuronen,sequence_length,epoche
     print(durationAmount)
 
     sequenceNo = 0
-    epochen = int((2000 / duration.shape[0]) * epochen)
-    if epochen < epochen:
-        epochen = 200
-    if duration.shape[0] > 13000:
-        sequence_length = 4
 
     print(str(duration.shape))
     # Logging
