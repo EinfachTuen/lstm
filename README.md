@@ -4,7 +4,7 @@ Das Machine Learning Model, Training und Prediction läuft in Phyton mithilfe vo
 Die Api zum umwandeln der Midifiles in Arrays läuft auf einem NodeJS WebServer.
 
 Die API ist in NodeJS geschrieben und befindet sich in diesem GitHub:
-[I'm an inline-style link with title](https://github.com/haukedau/apiMidiToJSONConverter "NodeJS GitHub")
+[NodeJS GitHub](https://github.com/haukedau/apiMidiToJSONConverter "NodeJS GitHub")
 
 ### Python
   
