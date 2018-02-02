@@ -3,9 +3,12 @@
 Das Machine Learning Model, Training und Prediction läuft in Phyton mithilfe von Keras auf dem Tensorflowbackend.
 Die Api zum umwandeln der Midifiles in Arrays läuft auf einem NodeJS WebServer.
 
-  ### Python
+Die API ist in NodeJS geschrieben und befindet sich in diesem GitHub:
+[I'm an inline-style link with title](https://github.com/haukedau/apiMidiToJSONConverter "NodeJS GitHub")
+
+### Python
   
-  ###### Requirements
+###### Requirements
   
     1. Python amd64
     2. Tensorflow 
@@ -14,7 +17,7 @@ Die Api zum umwandeln der Midifiles in Arrays läuft auf einem NodeJS WebServer.
     6. Numpy
 ### Node JS
 
-  ###### Requirements  
+###### Requirements
   
     1. NodeJS
     2. Express (npm install im aktuellen Projekt sollte reichen)
