@@ -1,4 +1,4 @@
-# New Document# Midi Music Generation with Keras
+# Midi Music Generation with Keras
 ## Installation
 Das Machine Learning Model, Training und Prediction läuft in Phyton mithilfe von Keras auf dem Tensorflowbackend.
 Die Api zum umwandeln der Midifiles in Arrays läuft auf einem NodeJS WebServer.
