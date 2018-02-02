@@ -11,20 +11,25 @@ def makeSpecialPrediction(model,actualTrain,midiName,channel,durations,times):
         if x > 0:
             actualTrain = actualTrain[1:actualTrain.shape[0]]
             partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
+            ##Decategorise
             partResult[1] = durations[numpy.argmax(partResult[1])]
             partResult[2] = times[numpy.argmax(partResult[2])]
             newresult = numpy.append(partResult[0], partResult[1])
             newresult = numpy.append(newresult, partResult[2])
             partResult = newresult
+            ###append original output (duration and time Categorised)
             actualTrain = numpy.append(actualTrain, [partResult],axis=0)
             result = numpy.append(result,[partResult],axis=0)
+    ## First Prediction
         else:
             partResult = (model.predict(numpy.array([actualTrain]), batch_size=32))
+            ##Decategorise
             partResult[1] = durations[numpy.argmax(partResult[1])]
             partResult[2] = times[numpy.argmax(partResult[2])]
             newresult = numpy.append(partResult[0], partResult[1])
             newresult = numpy.append(newresult, partResult[2])
             partResult = newresult
+            ###append original output (duration and time Categorised)
             actualTrain =  numpy.append(actualTrain,[partResult],axis=0)
             result = numpy.empty([1, 130])
             result[0] = partResult[0]
