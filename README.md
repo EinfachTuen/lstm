@@ -17,16 +17,27 @@ Die Api zum umwandeln der Midifiles in Arrays läuft auf einem NodeJS WebServer.
     
 ## How to Run:
 
+NodeJS:
+
+	0.	Installiere alle prerequirements
+    1.  Fuege den Ordner mit Midi Files der Analysiert werden soll, im Webstormproject zu unter ./Music ein.
+    2.	Aendere in Webstorm unter ./routes/index.js den Foldernamen so das er dem Folder entspricht
+    	let folderName = "bachOneChannel";     
+    3.  Starte den Server mithilfe von Webstorm oder direkt via NodeJS durch ausfuehren der ./bin/www.js
+
+Python:
+
+	1.  Stelle die Parameter (siehe untent) in der training.py so ein wie sie gefallen. Oder lasse Sie so wie sie sind. 
+	2.  Starte training.py mit Python / Pycharm er zieht sich automatisch die Midi Files vom Webstorm.
+	3.  Wenn das Training fertig ist sollte eine Plot angezeigt werden.
+	4.  Starte runPrediction aus.
 
 ## Python Files and Functions: 
-
 ### training.py
 
 Diese Datei muss ausgeführt werden um die Models zu trainieren.
 
-##### def printHisory()
-
-Initialisierung wichtiger Variablen für das Training
+###### Initialisierung wichtiger Variablen für das Training
 
 ```
 epochen = 10
@@ -41,7 +52,7 @@ hl_Neuronen_Duration = 155
 Erstellen der Ordner in denen die Models gespeichert werden
 und iteration über jeden Channel der Midi Files. Erstellt für jedes File einen eigenen Projekt Ordner
 
-##### def printHisory()
+###### def printHisory()
 
 Plottet den Verlauf des Trainings
 'history': Training des Models gibt ein
@@ -83,7 +94,7 @@ def GetAllTogether():
 
 ### modelDefinitions.py
 
-##### def specialModel(...)
+###### def specialModel(...)
 Dies ist die Definition des aktuell genutzen Keras Models sie ist kurz aber die umwandlung aller Daten ist kompliziert.
 
 ```
@@ -109,20 +120,20 @@ def specialModel(notes,channelName,folderName,sequence_length,epochen,batch_size
 
 ```
 
-##### def categorieze(duration)
+###### def categorieze(duration)
 Diese Funktion categorisiert Float Arrays und liefert für jeden Wert eine ID
 
-##### def shapeData(uploadResult,sequence_length):
+###### def shapeData(uploadResult,sequence_length):
 Function ändert die Art wie die Daten formartiert sind.
 
 ### predictionFunctions.py
 
-##### def makeSpecialPrediction(model,actualTrain,midiName,channel,durations,times):
+###### def makeSpecialPrediction(model,actualTrain,midiName,channel,durations,times):
 
 Hier findet die Tatsächliche Prediktion statt. Es wird das aktuell ausgewählte model geladen und x Schritte in die Zukunft predicted. Der Output des jeweiligen Prediction Schrittes wird an den vorherigen Output angehängt. So das es einen neuen Input Vektor erstellt.
 
 
-##### def runPrediction(folderName,channel,midiName):
+###### def runPrediction(folderName,channel,midiName):
 
 Diese Funktion wird von run Prediction ausgeführt Sie initializiert den ersten Input Vektor und führt dann make Special Prediction aus.
 
