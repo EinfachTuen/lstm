@@ -4,14 +4,18 @@ Das Machine Learning Model, Training und Prediction läuft in Phyton mithilfe vo
 Die Api zum umwandeln der Midifiles in Arrays läuft auf einem NodeJS WebServer.
 
   ### Python
+  
   ###### Requirements
+  
     1. Python amd64
     2. Tensorflow 
     3. Keras
     4. Matplotlib
     6. Numpy
 ### Node JS
+
   ###### Requirements  
+  
     1. NodeJS
     2. Express (npm install im aktuellen Projekt sollte reichen)
     
@@ -29,8 +33,8 @@ Python:
 
 	1.  Stelle die Parameter (siehe untent) in der training.py so ein wie sie gefallen. Oder lasse Sie so wie sie sind. 
 	2.  Starte training.py mit Python / Pycharm er zieht sich automatisch die Midi Files vom Webstorm.
-	3.  Wenn das Training fertig ist sollte eine Plot angezeigt werden.
-	4.  Starte runPrediction aus.
+	3.  Wenn das Training fertig ist sollte eine Plot angezeigt werden und das Model sollte unter ./ Models gespeichert werden.
+	4.  Waehle das erstellte Model fuer den gewuenschten Channel in runPrediction aus und starte Training.
 
 ## Python Files and Functions: 
 ### training.py
